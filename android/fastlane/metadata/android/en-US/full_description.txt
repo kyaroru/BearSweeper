@@ -1,0 +1,4 @@
+A mini game similar to Minesweeper but this is for bear :p
+- It is built using ReactNative + Redux Saga
+
+It is open source and can be found on GitHub: https://www.github.com/kyaroru/BearSweeper

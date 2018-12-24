@@ -3,9 +3,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-  View, StyleSheet, Text, Dimensions,
+  View, StyleSheet, Text, Dimensions, TouchableOpacity,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Entypo';
 import * as Colors from 'themes/colors';
 import Timer from '../container/Timer';
 import Tile from '../container/Tile';
@@ -40,6 +39,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
   },
+  face: {
+    fontSize: 40,
+  },
 });
 
 class Game extends Component {
@@ -58,11 +60,11 @@ class Game extends Component {
     } = this.props;
     const smiley = () => {
       if (isLose) {
-        return <Icon onPress={newGame} name="emoji-sad" size={40} />;
+        return <TouchableOpacity onPress={newGame}><Text style={styles.face}>😭</Text></TouchableOpacity>;
       } if (isWon) {
-        return <Icon onPress={newGame} name="emoji-happy" size={40} />;
+        return <TouchableOpacity onPress={newGame}><Text style={styles.face}>😍</Text></TouchableOpacity>;
       }
-      return <Icon onPress={newGame} name="emoji-neutral" size={40} />;
+      return <TouchableOpacity onPress={newGame}><Text style={styles.face}>😏</Text></TouchableOpacity>;
     };
     return (
       <View style={styles.container}>

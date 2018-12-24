@@ -19,6 +19,7 @@ export const getNavigationOptionsWithAction = (title, backgroundColor, color, he
   title,
   headerStyle: {
     backgroundColor,
+    borderBottomWidth: 0,
   },
   headerTitleStyle: {
     color,

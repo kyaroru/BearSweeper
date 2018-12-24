@@ -3,7 +3,7 @@
 import React from 'react';
 
 import {
-  StyleSheet, View, Image, Dimensions,
+  StyleSheet, View, Image, Dimensions, Text, Alert, TouchableOpacity,
 } from 'react-native';
 
 import * as Colors from 'themes/colors';
@@ -22,6 +22,11 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     width: SCREEN_WIDTH * 0.7,
     height: SCREEN_WIDTH * 0.7,
+  },
+  label: {
+    textAlign: 'center',
+    color: Colors.font,
+    marginTop: 20,
   },
   top: {
     flex: 3,
@@ -42,10 +47,15 @@ const images = {
   bear: require('images/bear-small2.png'),
 };
 
+const alert = () => Alert.alert('Ouch', 'Not tap on me :p');
+
 const Home = () => (
   <View style={styles.container}>
     <View style={styles.top}>
-      <Image style={styles.bear} source={images.bear} />
+      <TouchableOpacity onPress={alert}>
+        <Image style={styles.bear} source={images.bear} />
+      </TouchableOpacity>
+      <Text style={styles.label}>Watch out for the Bear!</Text>
     </View>
     <View style={styles.bottom}>
       <View style={styles.buttonContainer}>

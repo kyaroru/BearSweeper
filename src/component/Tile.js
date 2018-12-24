@@ -87,7 +87,12 @@ class Tile extends Component {
         return null;
       }
       if (this.props.flagued) {
-        return <IconFoundation style={styles.text} name="flag" />;
+        // return <IconFoundation style={styles.text} name="flag" />;
+        return (
+          <Text style={{ textAlign: 'center' }}>
+            ⛳
+          </Text>
+        );
       }
       return null;
     };

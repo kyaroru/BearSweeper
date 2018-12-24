@@ -1,5 +1,5 @@
 import { createLogger } from 'redux-logger';
-import { AsyncStorage } from 'react-native';
+// import { AsyncStorage } from 'react-native';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { persistStore, persistReducer } from 'redux-persist';
 import createSagaMiddleware from 'redux-saga';
@@ -10,10 +10,10 @@ let middlewares;
 let store;
 const sagaMiddleware = createSagaMiddleware();
 
-const config = {
-  key: 'main',
-  storage: AsyncStorage,
-};
+// const config = {
+//   key: 'main',
+//   storage: AsyncStorage,
+// };
 
 const { game, ...otherReducers } = reducers;
 const reducer = combineReducers({

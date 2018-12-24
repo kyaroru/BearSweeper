@@ -7,6 +7,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "prop-types": "^15.6.2",
     "react": "16.6.3",
     "react-native": "0.57.8",
     "react-native-vector-icons": "^6.1.0",
@@ -19,7 +20,16 @@
     "redux-saga": "^0.16.2"
   },
   "devDependencies": {
+    "babel-eslint": "^10.0.1",
     "babel-jest": "23.6.0",
+    "babel-preset-react-native": "^4.0.1",
+    "eslint": "^5.11.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-flowtype": "^3.2.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-react": "^7.11.1",
+    "eslint-plugin-react-native": "^3.5.0",
     "jest": "23.6.0",
     "metro-react-native-babel-preset": "0.51.1",
     "react-test-renderer": "16.6.3"

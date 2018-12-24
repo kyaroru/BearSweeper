@@ -1,10 +1,13 @@
 // @flow
 
-import React, { Component } from 'react'
-import { View, Modal, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native'
+import React, { Component } from 'react';
+import {
+  View, Modal, Text, StyleSheet, TouchableWithoutFeedback,
+} from 'react-native';
 import Button from 'common/Button';
+import PropTypes from 'prop-types';
 import * as Colors from 'themes/colors';
-import { hideModal } from '../action/Modal'
+import { hideModal } from '../action/Modal';
 
 const styles = StyleSheet.create({
   modal: {
@@ -34,13 +37,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 10,
   },
-})
+});
 
 class LeaderBoardModal extends Component {
-  props: {
-    visible: boolean,
-    dispatch: Function,
+  static propTypes = {
+    visible: PropTypes.bool.isRequired,
+    dispatch: PropTypes.func.isRequired,
   }
+
   render() {
     const dismiss = () => this.props.dispatch(hideModal());
     return (
@@ -58,16 +62,16 @@ class LeaderBoardModal extends Component {
                 <Text style={styles.modalTitle}>Congratulations</Text>
               </View>
               <View style={styles.content}>
-                <Text style={styles.label}>You've won the game!</Text>
+                <Text style={styles.label}>{'You\'ve won the game!'}</Text>
                 <Button title="Of course!" onPress={dismiss} />
               </View>
             </View>
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-    )
+    );
   }
 }
 
 
-export default LeaderBoardModal
+export default LeaderBoardModal;

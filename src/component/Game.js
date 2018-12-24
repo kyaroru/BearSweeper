@@ -1,12 +1,15 @@
 // @flow
 
-import React, { Component } from 'react'
-import { View, StyleSheet, Text, Dimensions } from 'react-native'
-import Icon from 'react-native-vector-icons/Entypo'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import {
+  View, StyleSheet, Text, Dimensions,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/Entypo';
 import * as Colors from 'themes/colors';
-import Timer from '../container/Timer'
-import Tile from '../container/Tile'
-import LeaderBoardModal from '../container/LeaderBoardModal'
+import Timer from '../container/Timer';
+import Tile from '../container/Tile';
+import LeaderBoardModal from '../container/LeaderBoardModal';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -36,28 +39,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     padding: 20,
-  }
-})
+  },
+});
 
 class Game extends Component {
-  props: {
-    isLose: boolean,
-    isWon: boolean,
-    board: any,
-    newGame: Function,
-    numberOfFlag: number,
-    numberOfMine: number,
+  static propTypes = {
+    isLose: PropTypes.bool.isRequired,
+    isWon: PropTypes.bool.isRequired,
+    board: PropTypes.any.isRequired,
+    newGame: PropTypes.func.isRequired,
+    numberOfFlag: PropTypes.number.isRequired,
+    numberOfMine: PropTypes.number.isRequired,
   }
+
   render() {
-    const { isLose, newGame, isWon, numberOfMine, numberOfFlag, board } = this.props
+    const {
+      isLose, newGame, isWon, numberOfMine, numberOfFlag, board,
+    } = this.props;
     const smiley = () => {
       if (isLose) {
-        return <Icon onPress={newGame} name="emoji-sad" size={40} />
-      } else if (isWon) {
-        return <Icon onPress={newGame} name="emoji-happy" size={40} />
+        return <Icon onPress={newGame} name="emoji-sad" size={40} />;
+      } if (isWon) {
+        return <Icon onPress={newGame} name="emoji-happy" size={40} />;
       }
-      return <Icon onPress={newGame} name="emoji-neutral" size={40} />
-    }
+      return <Icon onPress={newGame} name="emoji-neutral" size={40} />;
+    };
     return (
       <View style={styles.container}>
         <View style={styles.container}>
@@ -65,18 +71,20 @@ class Game extends Component {
             <Timer isWon={isWon} isLose={isLose} />
             {smiley()}
             <Text>
-              {numberOfFlag.toString()} / {numberOfMine.toString()}
+              {numberOfFlag.toString()}
+              {' '}
+/
+              {' '}
+              {numberOfMine.toString()}
             </Text>
           </View>
           <View style={styles.board}>
             {
-              board.map(row =>
+              board.map(row => (
                 <View style={styles.column} key={board.indexOf(row)}>
-                  {row.map(tile =>
-                    <Tile key={tile.id.y} {...tile} />,
-                  )}
-                </View>,
-              )
+                  {row.map(tile => <Tile key={tile.id.y} {...tile} />)}
+                </View>
+              ))
             }
           </View>
           <View style={styles.footer}>
@@ -85,9 +93,8 @@ class Game extends Component {
         </View>
         <LeaderBoardModal />
       </View>
-    )
+    );
   }
 }
 
-
-export default Game
+export default Game;

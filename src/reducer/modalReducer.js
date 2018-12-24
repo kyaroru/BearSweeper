@@ -3,21 +3,21 @@
 import {
   SHOW_MODAL,
   HIDE_MODAL,
-} from '../action/Modal'
+} from '../action/Modal';
 
 const initialState = {
   visible: false,
-}
+};
 
-const timerReducer = (state: Object = initialState, action: { type: string, payload: any }) => {
+const timerReducer = (state = initialState, action) => {
   switch (action.type) {
     case SHOW_MODAL:
-      return { visible: true }
+      return { visible: true };
     case HIDE_MODAL:
-      return { visible: false }
+      return { visible: false };
     default:
-      return state
+      return state;
   }
-}
+};
 
-export default timerReducer
+export default timerReducer;

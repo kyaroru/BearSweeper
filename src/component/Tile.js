@@ -1,9 +1,12 @@
 // @flow
 
-import React, { Component } from 'react'
-import { Text, StyleSheet, TouchableOpacity } from 'react-native'
-import IconMaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
-import IconFoundation from 'react-native-vector-icons/Foundation'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import {
+  Text, StyleSheet, TouchableOpacity, Image,
+} from 'react-native';
+import IconMaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconFoundation from 'react-native-vector-icons/Foundation';
 import * as Colors from 'themes/colors';
 
 const styles = StyleSheet.create({
@@ -11,78 +14,92 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 2,
     justifyContent: 'center',
-    alignItems: 'stretch',
+    alignItems: 'center',
     elevation: 4,
     borderRadius: 4,
   },
   text: {
     textAlign: 'center',
   },
-})
+  bear: {
+    resizeMode: 'contain',
+    width: '80%',
+  },
+});
+
+const images = {
+  bear: require('images/bear-small2.png'),
+};
 
 class Tile extends Component {
+  static propTypes = {
+    sweeped: PropTypes.bool.isRequired,
+    flagued: PropTypes.bool,
+    isMine: PropTypes.bool.isRequired,
+    isLose: PropTypes.bool.isRequired,
+    isWon: PropTypes.bool.isRequired,
+    number: PropTypes.number.isRequired,
+    onPress: PropTypes.func.isRequired,
+    flagTile: PropTypes.func.isRequired,
+    unFlagTile: PropTypes.func.isRequired,
+  };
+
   static defaultProps = {
     flagued: false,
   }
-  props: {
-    sweeped: boolean,
-    flagued: boolean,
-    isMine: boolean,
-    isLose: boolean,
-    isWon: boolean,
-    number: number,
-    onPress: Function,
-    flagTile: Function,
-    unFlagTile: Function,
-  }
+
   render() {
     const color = () => {
       switch (this.props.number) {
         case 1:
-          return 'blue'
+          return 'blue';
         case 2:
-          return 'green'
+          return 'green';
         case 3:
-          return 'red'
+          return 'red';
         case 4:
-          return 'darkblue'
+          return 'darkblue';
         case 5:
-          return 'brown'
+          return 'brown';
         case 6:
-          return 'cyan'
+          return 'cyan';
         case 7:
-          return 'black'
+          return 'black';
         case 8:
-          return 'grey'
+          return 'grey';
         default:
-          return 'black'
+          return 'black';
       }
-    }
+    };
     const tile = () => {
       if (this.props.sweeped) {
         if (this.props.isMine) {
-          return <IconMaterialCommunity style={styles.text} name="bomb" />
+          // return <IconMaterialCommunity style={styles.text} name="bomb" />
+          return <Image style={styles.bear} source={images.bear} />;
         }
-        return (
-          <Text style={{ textAlign: 'center', color: color() }}>
-            {this.props.number.toString()}
-          </Text>
-        )
+        if (this.props.number > 0) {
+          return (
+            <Text style={{ textAlign: 'center', color: color() }}>
+              {this.props.number.toString()}
+            </Text>
+          );
+        }
+        return null;
       }
       if (this.props.flagued) {
-        return <IconFoundation style={styles.text} name="flag" />
+        return <IconFoundation style={styles.text} name="flag" />;
       }
-      return null
-    }
+      return null;
+    };
     const backgroundColor = () => {
       if (!this.props.sweeped) {
-        return { backgroundColor: Colors.sweep};
+        return { backgroundColor: Colors.unsweep };
       }
       if (this.props.sweeped && this.props.isMine) {
-        return { backgroundColor: Colors.mine};
+        return { backgroundColor: Colors.mine };
       }
-      return { backgroundColor: Colors.unsweep};
-    }
+      return { backgroundColor: Colors.sweep };
+    };
     return (
       <TouchableOpacity
         style={[styles.button, backgroundColor()]}
@@ -92,9 +109,8 @@ class Tile extends Component {
       >
         {tile()}
       </TouchableOpacity>
-    )
+    );
   }
 }
 
-
-export default Tile
+export default Tile;

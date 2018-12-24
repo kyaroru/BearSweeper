@@ -1,10 +1,12 @@
 // @flow
 
-import React from 'react'
-
-import { StyleSheet, View, Dimensions, TouchableOpacity, Text } from 'react-native'
+import React from 'react';
+import PropTypes from 'prop-types';
+import {
+  StyleSheet, TouchableOpacity, Text,
+} from 'react-native';
 import * as Colors from 'themes/colors';
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
 
 const styles = StyleSheet.create({
   button: {
@@ -20,11 +22,17 @@ const styles = StyleSheet.create({
   title: {
     color: Colors.white,
   },
-})
+});
 
-const Button = ({ onPress, title }) =>
-    <TouchableOpacity style={styles.button} onPress={onPress}>
-      <Text style={styles.title}>{title}</Text>
-    </TouchableOpacity>
+const Button = ({ onPress, title }) => (
+  <TouchableOpacity style={styles.button} onPress={onPress}>
+    <Text style={styles.title}>{title}</Text>
+  </TouchableOpacity>
+);
+
+Button.propTypes = {
+  onPress: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
+};
 
 export default Button;

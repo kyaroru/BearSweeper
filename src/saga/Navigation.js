@@ -1,13 +1,15 @@
-import { call, all, takeLatest, fork, put } from 'redux-saga/effects'
+import {
+  call, all, takeLatest, fork, put,
+} from 'redux-saga/effects';
 
 import {
   GO_TO_DIFFICULTY,
   GO_TO_GAME,
   GO_TO_LEADERBOARD,
-} from '../action/Navigator'
+} from '../action/Navigator';
 
-import { newGame } from '../action/Game'
-import { timerReset, timerStop } from '../action/Timer'
+import { newGame } from '../action/Game';
+import { timerReset, timerStop } from '../action/Timer';
 
 import AppNavigationService from '../route/AppNavigationService';
 
@@ -17,9 +19,9 @@ function* goToDifficulty() {
 
 function* goToGame() {
   yield call(AppNavigationService.navigate, 'Game');
-  yield put(newGame())
-  yield put(timerStop())
-  yield put(timerReset())
+  yield put(newGame());
+  yield put(timerStop());
+  yield put(timerReset());
 }
 
 function* goToLeaderboard() {
@@ -32,7 +34,7 @@ function* watchGoToDifficulty() {
 
 function* watchGoToGame() {
   yield takeLatest(GO_TO_GAME, goToGame);
-  yield put(timerReset())
+  yield put(timerReset());
 }
 
 function* watchGoToLeaderboard() {

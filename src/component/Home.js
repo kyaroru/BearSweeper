@@ -1,12 +1,15 @@
 // @flow
 
-import React from 'react'
+import React from 'react';
 
-import { StyleSheet, View, Image, Dimensions } from 'react-native'
+import {
+  StyleSheet, View, Image, Dimensions,
+} from 'react-native';
 
-import PlayButton from '../container/PlayButton'
-import LeaderboardButton from '../container/LeaderboardButton'
 import * as Colors from 'themes/colors';
+import PlayButton from '../container/PlayButton';
+// import LeaderboardButton from '../container/LeaderboardButton';
+
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
@@ -20,9 +23,6 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH * 0.7,
     height: SCREEN_WIDTH * 0.7,
   },
-  title: {
-    textAlign: 'center',
-  },
   top: {
     flex: 3,
     alignItems: 'center',
@@ -35,14 +35,14 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: SCREEN_WIDTH * 0.7,
-  }
-})
+  },
+});
 
 const images = {
   bear: require('images/bear-small2.png'),
-}
+};
 
-const Home = () =>
+const Home = () => (
   <View style={styles.container}>
     <View style={styles.top}>
       <Image style={styles.bear} source={images.bear} />
@@ -54,5 +54,6 @@ const Home = () =>
       </View>
     </View>
   </View>
+);
 
-export default Home
+export default Home;

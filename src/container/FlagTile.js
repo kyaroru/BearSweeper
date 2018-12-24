@@ -1,12 +1,12 @@
 // @flow
 
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 
-import { Button } from 'react-native'
+import { Button } from 'react-native';
 
 import {
   unFlag,
-} from '../action/Game'
+} from '../action/Game';
 
 const mapStateToProps = () => ({
   icon: {
@@ -14,10 +14,10 @@ const mapStateToProps = () => ({
     name: 'flag',
     size: 12,
   },
-})
+});
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   onLongPress: () => dispatch(unFlag(ownProps.id)),
-})
+});
 
-export default connect(mapStateToProps, mapDispatchToProps)(Button)
+export default connect(mapStateToProps, mapDispatchToProps)(Button);

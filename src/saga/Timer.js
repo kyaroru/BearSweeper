@@ -1,31 +1,26 @@
-import { actionChannel, call, take, put, race } from 'redux-saga/effects'
-
-import { timerIncrement, TIMER_STOP, TIMER_START } from '../action/Timer'
-
-// wait :: Number -> Promise
-const wait = ms => (
-  new Promise((resolve) => {
-    setTimeout(() => resolve(), ms)
-  })
-)
+import {
+  actionChannel, call, take, put, race,
+} from 'redux-saga/effects';
+import { delay } from 'redux-saga';
+import { timerIncrement, TIMER_STOP, TIMER_START } from '../action/Timer';
 
 function* runTimer() {
-  const channel = yield actionChannel(TIMER_START)
+  const channel = yield actionChannel(TIMER_START);
 
   while (yield take(channel)) {
     while (true) { // eslint-disable-line
       const winner = yield race({
         stopped: take(TIMER_STOP),
-        tick: call(wait, 1000),
-      })
+        tick: call(delay, 1000),
+      });
 
       if (!winner.stopped) {
-        yield put(timerIncrement())
+        yield put(timerIncrement());
       } else {
-        break
+        break;
       }
     }
   }
 }
 
-export default runTimer
+export default runTimer;

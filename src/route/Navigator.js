@@ -1,13 +1,13 @@
 // @flow
 
-import React from 'react'
-import { connect } from 'react-redux'
-import { createStackNavigator, createAppContainer } from 'react-navigation'
+import React from 'react';
+import { connect } from 'react-redux';
+import { createStackNavigator, createAppContainer } from 'react-navigation';
 
-import Home from './scene/Home'
-import Difficulty from './scene/Difficulty'
-import Game from './scene/Game'
-import Leaderboard from './scene/Leaderboard'
+import Home from './scene/Home';
+import Difficulty from './scene/Difficulty';
+import Game from './scene/Game';
+import Leaderboard from './scene/Leaderboard';
 
 const routeConfiguration = {
   Home: { screen: Home },

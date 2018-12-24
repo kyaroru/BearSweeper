@@ -1,40 +1,46 @@
-import { take, put, select } from 'redux-saga/effects'
+import {
+  take, put, select, call,
+} from 'redux-saga/effects';
+import { Vibration } from 'react-native';
 
 import {
   showModal,
-} from '../action/Modal'
+} from '../action/Modal';
 
 import {
   timerStart,
   timerStop,
   timerReset,
-} from '../action/Timer'
+} from '../action/Timer';
 
 import {
   SWEEP,
   check,
-} from '../action/Game'
+} from '../action/Game';
 
 import {
   getIsLose,
   getIsWon,
   getTimerStarted,
-} from '../reducer'
+} from '../reducer';
 
 function* sweep() {
   while (yield take(SWEEP)) {
-    yield put(check())
-    const state = yield select()
+    yield put(check());
+    const state = yield select();
     if (getIsWon(state)) {
-      yield put(showModal())
+      yield put(showModal());
+    }
+    if (getIsLose(state)) {
+      yield call(Vibration.vibrate, 200);
     }
     if (getIsLose(state) || getIsWon(state)) {
-      yield put(timerStop())
+      yield put(timerStop());
     } else if (!getTimerStarted(state)) {
-      yield put(timerReset())
-      yield put(timerStart())
+      yield put(timerReset());
+      yield put(timerStart());
     }
   }
 }
 
-export default sweep
+export default sweep;

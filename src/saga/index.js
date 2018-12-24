@@ -1,3 +1,5 @@
+import { spawn } from 'redux-saga/effects';
+import codePushSaga from 'react-native-code-push-saga';
 import timerSaga from './Timer';
 import sweepSaga from './Sweep';
 import gameSaga from './Game';
@@ -9,5 +11,6 @@ export default function* rootSaga() {
     timerSaga(),
     sweepSaga(),
     navigationSaga(),
+    yield spawn(codePushSaga),
   ];
 }

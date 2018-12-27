@@ -72,6 +72,21 @@ const reveal = (board, id) => {
       if (theRestNeighbors.length > 0) {
         theRestNeighbors.forEach((rest) => {
           board[rest.x][rest.y] = { ...board[rest.x][rest.y], sweeped: true } // eslint-disable-line
+          const restList = [];
+          if (board[rest.x][rest.y].number === 0) {
+            restList.push(rest);
+          }
+          while (restList.length !== 0) {
+            getNeighborsIds(board, restList.pop()).forEach((neighbor) => {
+              board[neighbor.x][neighbor.y] = { ...board[neighbor.x][neighbor.y], sweeped: true } // eslint-disable-line
+              if (
+                board[neighbor.x][neighbor.y].number === 0
+                && notRevealedNeighborsNumber(board, neighbor) !== 0
+              ) {
+                restList.push(neighbor);
+              }
+            });
+          }
         });
       }
     }

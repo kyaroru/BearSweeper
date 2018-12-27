@@ -45,6 +45,7 @@
     "react-native/no-unused-styles": 2,
     "react-native/no-inline-styles": 2,
     "react-native/no-color-literals": 1,
-    "react/destructuring-assignment": 0
+    "react/destructuring-assignment": 0,
+    "jsx-a11y/accessible-emoji": 0
   }
 }

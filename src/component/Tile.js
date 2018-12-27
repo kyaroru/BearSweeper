@@ -5,8 +5,6 @@ import PropTypes from 'prop-types';
 import {
   Text, StyleSheet, TouchableOpacity, Image,
 } from 'react-native';
-import IconMaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
-import IconFoundation from 'react-native-vector-icons/Foundation';
 import * as Colors from 'themes/colors';
 
 const styles = StyleSheet.create({
@@ -18,12 +16,13 @@ const styles = StyleSheet.create({
     elevation: 4,
     borderRadius: 4,
   },
-  text: {
-    textAlign: 'center',
-  },
   bear: {
     resizeMode: 'contain',
     width: '80%',
+  },
+  flag: {
+    textAlign: 'center',
+    fontSize: 14,
   },
 });
 
@@ -89,7 +88,7 @@ class Tile extends Component {
       if (this.props.flagued) {
         // return <IconFoundation style={styles.text} name="flag" />;
         return (
-          <Text style={{ textAlign: 'center' }}>
+          <Text style={styles.flag}>
             ⛳
           </Text>
         );
@@ -110,7 +109,7 @@ class Tile extends Component {
         style={[styles.button, backgroundColor()]}
         onPress={this.props.flagued ? null : this.props.onPress}
         onLongPress={this.props.flagued ? this.props.unFlagTile : this.props.flagTile}
-        disabled={this.props.sweeped || this.props.isLose || this.props.isWon}
+        disabled={this.props.isLose || this.props.isWon}
       >
         {tile()}
       </TouchableOpacity>

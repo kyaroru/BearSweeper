@@ -1,6 +1,5 @@
 // @flow
 
-
 import {
   SWEEP,
   FLAG,
@@ -23,7 +22,7 @@ const getNeighborsIds = (board, id) => {
   return neighbors.filter(neighborsId => isInBoard(board, neighborsId));
 };
 
-const notRevealedNeighbors = (board, id) => {
+const notRevealedNeighborsNumber = (board, id) => {
   let count = 0;
   getNeighborsIds(board, id).forEach((neighborsId) => {
     if (!board[neighborsId.x][neighborsId.y].sweeped) {
@@ -31,6 +30,16 @@ const notRevealedNeighbors = (board, id) => {
     }
   });
   return count;
+};
+
+const notRevealedNeighbors = (board, id) => {
+  const list = [];
+  getNeighborsIds(board, id).forEach((neighborsId) => {
+    if (!board[neighborsId.x][neighborsId.y].sweeped) {
+      list.push(neighborsId);
+    }
+  });
+  return list;
 };
 
 const reveal = (board, id) => {
@@ -44,11 +53,28 @@ const reveal = (board, id) => {
       board[neighbor.x][neighbor.y] = { ...board[neighbor.x][neighbor.y], sweeped: true } // eslint-disable-line
       if (
         board[neighbor.x][neighbor.y].number === 0
-        && notRevealedNeighbors(board, neighbor) !== 0
+        && notRevealedNeighborsNumber(board, neighbor) !== 0
       ) {
         list.push(neighbor);
       }
     });
+  }
+  if (board[id.x][id.y].number > 0 && board[id.x][id.y].sweeped && !board[id.x][id.y].isMine) {
+    const neighbors = notRevealedNeighbors(board, id);
+    const correctItems = [];
+    neighbors.forEach((neighbor) => {
+      if (board[neighbor.x][neighbor.y].isMine && board[neighbor.x][neighbor.y].flagued) {
+        correctItems.push(board[neighbor.x][neighbor.y].id);
+      }
+    });
+    if (correctItems.length > 0 && correctItems.length === board[id.x][id.y].number) {
+      const theRestNeighbors = neighbors.filter(neighbor => !correctItems.some(item => neighbor.x === item.x && neighbor.y === item.y));
+      if (theRestNeighbors.length > 0) {
+        theRestNeighbors.forEach((rest) => {
+          board[rest.x][rest.y] = { ...board[rest.x][rest.y], sweeped: true } // eslint-disable-line
+        });
+      }
+    }
   }
   return board;
 };

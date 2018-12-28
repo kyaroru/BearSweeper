@@ -1,4 +1,9 @@
-A mini game similar to Minesweeper but this is for bear :p
-- It is built using ReactNative + Redux Saga
+A mini game that require you to watch out for bear :p
+The goal is to clear the field without trigger a bear rage.
+
+- Tap to reveal a tile
+- Long tap to flag/unflag the tile
+
+- It is built using React Native + Redux Saga
 
 It is open source and can be found on GitHub: https://www.github.com/kyaroru/BearSweeper

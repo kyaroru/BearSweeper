@@ -8,7 +8,7 @@ import {
   GO_TO_LEADERBOARD,
 } from '../action/Navigator';
 
-import { newGame } from '../action/Game';
+import { newGame, clearHints } from '../action/Game';
 import { timerReset, timerStop } from '../action/Timer';
 
 import AppNavigationService from '../route/AppNavigationService';
@@ -22,6 +22,7 @@ function* goToGame() {
   yield put(newGame());
   yield put(timerStop());
   yield put(timerReset());
+  yield put(clearHints());
 }
 
 function* goToLeaderboard() {

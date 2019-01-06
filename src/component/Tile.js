@@ -6,6 +6,7 @@ import {
   Text, StyleSheet, TouchableOpacity, Image,
 } from 'react-native';
 import * as Colors from 'themes/colors';
+import BlinkView from 'common/BlinkView';
 
 const styles = StyleSheet.create({
   button: {
@@ -23,6 +24,12 @@ const styles = StyleSheet.create({
   flag: {
     textAlign: 'center',
     fontSize: 14,
+  },
+  blinking: {
+    backgroundColor: Colors.primary,
+    flex: 1,
+    width: '100%',
+    borderRadius: 4,
   },
 });
 
@@ -112,6 +119,7 @@ class Tile extends Component {
         disabled={this.props.isLose || this.props.isWon}
       >
         {tile()}
+        {this.props.isHint && <BlinkView style={styles.blinking} blinking delay={500} />}
       </TouchableOpacity>
     );
   }

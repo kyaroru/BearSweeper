@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const alert = () => Alert.alert('Hello there', 'Welcome to BearSweeper! Just play it like how you play Minesweeper :p \n\nInstructions: \n- Tap to reveal\n- Long Tap to Flag ⛳\n- Tap emoji to restart\n\nGame Status:\n- Ongoing (😏)\n- Win (😍)\n- Lose (😭)');
+const alert = () => Alert.alert('Hello there', 'Welcome to BearSweeper! This game was built using React Native & it is open sourced 😍\n\nAuthor: Chiew Carol\nGithub: https://github.com/kyaroru/BearSweeper');
 
 const InformationIcon = () => (
   <TouchableOpacity style={styles.container} onPress={alert}>

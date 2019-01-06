@@ -1,5 +1,5 @@
 import {
-  take, put, select, call,
+  takeLatest, all, fork, put, select, call,
 } from 'redux-saga/effects';
 import { Vibration } from 'react-native';
 
@@ -16,6 +16,7 @@ import {
 import {
   SWEEP,
   check,
+  clearHints,
 } from '../action/Game';
 
 import {
@@ -25,22 +26,29 @@ import {
 } from '../reducer';
 
 function* sweep() {
-  while (yield take(SWEEP)) {
-    yield put(check());
-    const state = yield select();
-    if (getIsWon(state)) {
-      yield put(showModal());
-    }
-    if (getIsLose(state)) {
-      yield call(Vibration.vibrate, 200);
-    }
-    if (getIsLose(state) || getIsWon(state)) {
-      yield put(timerStop());
-    } else if (!getTimerStarted(state)) {
-      yield put(timerReset());
-      yield put(timerStart());
-    }
+  yield put(check());
+  yield put(clearHints());
+  const state = yield select();
+  if (getIsWon(state)) {
+    yield put(showModal());
+  }
+  if (getIsLose(state)) {
+    yield call(Vibration.vibrate, 200);
+  }
+  if (getIsLose(state) || getIsWon(state)) {
+    yield put(timerStop());
+  } else if (!getTimerStarted(state)) {
+    yield put(timerReset());
+    yield put(timerStart());
   }
 }
 
-export default sweep;
+function* watchSweep() {
+  yield takeLatest(SWEEP, sweep);
+}
+
+export default function* game() {
+  yield all([
+    fork(watchSweep),
+  ]);
+}

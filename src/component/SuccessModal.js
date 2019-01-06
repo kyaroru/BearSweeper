@@ -43,10 +43,12 @@ class LeaderBoardModal extends Component {
   static propTypes = {
     visible: PropTypes.bool.isRequired,
     dispatch: PropTypes.func.isRequired,
+    timerCount: PropTypes.number.isRequired,
   }
 
   render() {
     const dismiss = () => this.props.dispatch(hideModal());
+    const { timerCount } = this.props;
     return (
       <Modal
         transparent
@@ -62,8 +64,9 @@ class LeaderBoardModal extends Component {
                 <Text style={styles.modalTitle}>Congratulations</Text>
               </View>
               <View style={styles.content}>
-                <Text style={styles.label}>{'You\'ve won the game!'}</Text>
-                <Button title="Of course!" onPress={dismiss} />
+                <Text style={styles.label}>{`You\'ve won the game in just ${timerCount} seconds!`}</Text>
+                <Text style={styles.label}>To start again, click the emoji :p</Text>
+                <Button title="Sure!" onPress={dismiss} />
               </View>
             </View>
           </View>

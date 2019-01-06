@@ -3,12 +3,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-  View, StyleSheet, Text, Dimensions, TouchableOpacity,
+  View, StyleSheet, Text, Dimensions, TouchableOpacity, Alert,
 } from 'react-native';
 import * as Colors from 'themes/colors';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import Timer from '../container/Timer';
 import Tile from '../container/Tile';
-import LeaderBoardModal from '../container/LeaderBoardModal';
+import SuccessModal from '../container/SuccessModal';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -19,7 +20,7 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
   },
@@ -42,6 +43,21 @@ const styles = StyleSheet.create({
   face: {
     fontSize: 40,
   },
+  hint: {
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: Colors.unsweep,
+    width: 30,
+    height: 30,
+    padding: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+  },
+  informationIcon: {
+    color: Colors.mine,
+    padding: 5,
+  },
 });
 
 class Game extends Component {
@@ -52,6 +68,24 @@ class Game extends Component {
     newGame: PropTypes.func.isRequired,
     numberOfFlag: PropTypes.number.isRequired,
     numberOfMine: PropTypes.number.isRequired,
+  }
+
+  onInfoPress = () => Alert.alert('Instructions', '- Tap to reveal\n- Long Tap to Flag ⛳\n- Tap emoji to restart\n- Tap the 💡 icon to get hint\n\nGame Status:\n- Ongoing (😏)\n- Win (😍)\n- Lose (😭)');
+
+  getHintButton = () => {
+    const { isHinted, isLose, isWon } = this.props;
+    if (isHinted || isLose || isWon) {
+      return {
+        position: 'absolute',
+        backgroundColor: Colors.modalBg,
+        width: 30,
+        height: 30,
+        zIndex: 1,
+        padding: 5,
+        borderRadius: 10,
+      };
+    }
+    return null;
   }
 
   render() {
@@ -70,6 +104,9 @@ class Game extends Component {
       <View style={styles.container}>
         <View style={styles.container}>
           <View style={styles.header}>
+            <TouchableOpacity onPress={this.onInfoPress}>
+              <Icon style={styles.informationIcon} name="info-circle" size={25} />
+            </TouchableOpacity>
             <Timer isWon={isWon} isLose={isLose} />
             {smiley()}
             <Text>
@@ -79,6 +116,10 @@ class Game extends Component {
               {' '}
               {numberOfMine.toString()}
             </Text>
+            <TouchableOpacity onPress={this.props.onHintPress} disabled={this.props.isWon || this.props.isHinted || this.props.isLose}>
+              <Text style={styles.hint}>💡</Text>
+              <View style={this.getHintButton()} />
+            </TouchableOpacity>
           </View>
           <View style={styles.board}>
             {
@@ -93,7 +134,7 @@ class Game extends Component {
             <Text>Enjoy BearSweeper !</Text>
           </View>
         </View>
-        <LeaderBoardModal />
+        <SuccessModal />
       </View>
     );
   }

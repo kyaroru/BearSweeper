@@ -48,10 +48,12 @@ class Tile extends Component {
     onPress: PropTypes.func.isRequired,
     flagTile: PropTypes.func.isRequired,
     unFlagTile: PropTypes.func.isRequired,
+    isHint: PropTypes.bool,
   };
 
   static defaultProps = {
     flagued: false,
+    isHint: undefined,
   }
 
   render() {
@@ -115,7 +117,7 @@ class Tile extends Component {
       <TouchableOpacity
         style={[styles.button, backgroundColor()]}
         onPress={this.props.flagued ? null : this.props.onPress}
-        onLongPress={this.props.flagued ? this.props.unFlagTile : this.props.flagTile}
+        onLongPress={this.props.isHint ? () => {} : this.props.flagued ? this.props.unFlagTile : this.props.flagTile}
         disabled={this.props.isLose || this.props.isWon}
       >
         {tile()}

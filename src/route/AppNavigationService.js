@@ -1,29 +1,28 @@
-import { NavigationActions } from 'react-navigation';
-
 let myNavigator;
 
 function setTopLevelNavigator(navigatorRef) {
   myNavigator = navigatorRef;
 }
 
-function navigate(routeName, params) {
-  if (myNavigator) {
-    myNavigator.dispatch(NavigationActions.navigate({
-      routeName,
-      params,
-    }));
+function navigate(name, params) {
+  if (myNavigator && myNavigator.isReady()) {
+    myNavigator.navigate(name, params);
   }
 }
 
 function goBack() {
-  if (myNavigator) {
-    myNavigator.dispatch(NavigationActions.back());
+  if (myNavigator && myNavigator.isReady()) {
+    myNavigator.goBack();
   }
 }
 
-function getCurrentTabIndex() {
-  if (myNavigator) {
-    return myNavigator.state.nav.routes[2].routes[0].index;
+function getCurrentRoute() {
+  if (myNavigator && myNavigator.isReady()) {
+    const currentRoute = myNavigator.getCurrentRoute();
+    console.log(
+      `[NavigationService] Current Route: ${JSON.stringify(currentRoute)}`,
+    );
+    return currentRoute?.name || null;
   }
 }
 
@@ -31,5 +30,5 @@ export default {
   navigate,
   goBack,
   setTopLevelNavigator,
-  getCurrentTabIndex,
+  getCurrentRoute,
 };

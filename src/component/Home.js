@@ -3,14 +3,20 @@
 import React from 'react';
 
 import {
-  StyleSheet, View, Image, Dimensions, Text, Alert, TouchableOpacity,
+  StyleSheet,
+  View,
+  Image,
+  Dimensions,
+  Text,
+  Alert,
+  TouchableOpacity,
 } from 'react-native';
 
 import * as Colors from 'themes/colors';
 import PlayButton from '../container/PlayButton';
 // import LeaderboardButton from '../container/LeaderboardButton';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const {width: SCREEN_WIDTH} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {

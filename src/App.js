@@ -1,23 +1,19 @@
-/**
- * @flow
- */
-
 import React from 'react';
-import { Provider } from 'react-redux';
-import configureStore from './store';
+import {Platform, StatusBar} from 'react-native';
+import {Provider} from 'react-redux';
 import AppNavigator from './route/Navigator';
-import AppNavigationService from './route/AppNavigationService';
+import configureStore from './store';
 
-const { store } = configureStore();
-
-const App = () => (
-  <Provider store={store}>
-    <AppNavigator
-      ref={(navigatorRef) => {
-        AppNavigationService.setTopLevelNavigator(navigatorRef);
-      }}
-    />
-  </Provider>
-);
+const App = () => {
+  const {store} = configureStore();
+  return (
+    <Provider store={store}>
+      <StatusBar
+        barStyle={Platform.OS === 'ios' ? 'dark-content' : 'default'}
+      />
+      <AppNavigator />
+    </Provider>
+  );
+};
 
 export default App;

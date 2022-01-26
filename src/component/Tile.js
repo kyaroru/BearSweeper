@@ -1,9 +1,14 @@
 // @flow
 
-import React, { Component } from 'react';
+import React, {Component, useRef, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {
-  Text, StyleSheet, TouchableOpacity, Image,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+  Image,
+  View,
 } from 'react-native';
 import * as Colors from 'themes/colors';
 import BlinkView from 'common/BlinkView';
@@ -14,12 +19,38 @@ const styles = StyleSheet.create({
     margin: 2,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 4,
+    // elevation: 4,
     borderRadius: 4,
   },
   bear: {
     resizeMode: 'contain',
+    width: 40,
+    height: 55,
+  },
+  bearImg: {
     width: '80%',
+    height: '80%',
+    alignSelf: 'center',
+  },
+  bearSpeech: {
+    width: '100%',
+    justifyContent: 'center',
+    backgroundColor: Colors.white,
+    borderRadius: 5,
+    paddingVertical: 2,
+    marginBottom: 2,
+    elevation: 5,
+    shadowColor: Colors.black,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 7,
+  },
+  bearSpeechText: {
+    fontSize: 6,
+    textAlign: 'center',
   },
   flag: {
     textAlign: 'center',
@@ -54,7 +85,7 @@ class Tile extends Component {
   static defaultProps = {
     flagued: false,
     isHint: undefined,
-  }
+  };
 
   render() {
     const color = () => {
@@ -79,15 +110,39 @@ class Tile extends Component {
           return 'black';
       }
     };
+    const ScaleBear = props => {
+      const scaleAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
+
+      useEffect(() => {
+        Animated.timing(scaleAnim, {
+          toValue: 2.5,
+          duration: 1000,
+          useNativeDriver: false,
+        }).start();
+      }, [scaleAnim]);
+
+      return (
+        <Animated.View style={[styles.bear, {transform: [{scale: scaleAnim}]}]}>
+          <View style={styles.bearSpeech}>
+            <Text style={styles.bearSpeechText}>Grrrr !</Text>
+          </View>
+          <Image style={[styles.bearImg]} source={images.bear} />
+        </Animated.View>
+      );
+    };
+
     const tile = () => {
       if (this.props.sweeped) {
         if (this.props.isMine) {
           // return <IconMaterialCommunity style={styles.text} name="bomb" />
-          return <Image style={styles.bear} source={images.bear} />;
+          return (
+            // <Image style={[styles.bear]} source={images.bear} />
+            <ScaleBear />
+          );
         }
         if (this.props.number > 0) {
           return (
-            <Text style={{ textAlign: 'center', color: color() }}>
+            <Text style={{textAlign: 'center', color: color()}}>
               {this.props.number.toString()}
             </Text>
           );
@@ -96,32 +151,40 @@ class Tile extends Component {
       }
       if (this.props.flagued) {
         // return <IconFoundation style={styles.text} name="flag" />;
-        return (
-          <Text style={styles.flag}>
-            ⛳
-          </Text>
-        );
+        return <Text style={styles.flag}>⛳</Text>;
       }
       return null;
     };
     const backgroundColor = () => {
       if (!this.props.sweeped) {
-        return { backgroundColor: Colors.unsweep };
+        return {backgroundColor: Colors.unsweep};
       }
       if (this.props.sweeped && this.props.isMine) {
-        return { backgroundColor: Colors.mine };
+        return {backgroundColor: Colors.mine};
       }
-      return { backgroundColor: Colors.sweep };
+      return {backgroundColor: Colors.sweep};
     };
     return (
       <TouchableOpacity
-        style={[styles.button, backgroundColor()]}
+        style={[
+          styles.button,
+          backgroundColor(),
+          this.props.isMine &&
+            this.props.sweeped && {elevation: 20, zIndex: 20},
+        ]}
         onPress={this.props.flagued ? null : this.props.onPress}
-        onLongPress={this.props.isHint ? () => {} : this.props.flagued ? this.props.unFlagTile : this.props.flagTile}
-        disabled={this.props.isLose || this.props.isWon}
-      >
+        onLongPress={
+          this.props.isHint
+            ? () => {}
+            : this.props.flagued
+            ? this.props.unFlagTile
+            : this.props.flagTile
+        }
+        disabled={this.props.isLose || this.props.isWon}>
         {tile()}
-        {this.props.isHint && <BlinkView style={styles.blinking} blinking delay={500} />}
+        {this.props.isHint && (
+          <BlinkView style={styles.blinking} blinking delay={500} />
+        )}
       </TouchableOpacity>
     );
   }

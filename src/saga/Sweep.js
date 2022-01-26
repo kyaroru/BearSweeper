@@ -1,31 +1,15 @@
-import {
-  takeLatest, all, fork, put, select, call,
-} from 'redux-saga/effects';
-import { Vibration } from 'react-native';
+import {takeLatest, all, fork, put, select, call} from 'redux-saga/effects';
+import {Vibration} from 'react-native';
 
-import {
-  showModal,
-} from '../action/Modal';
+import {showModal} from '../action/Modal';
 
-import {
-  timerStart,
-  timerStop,
-  timerReset,
-} from '../action/Timer';
+import {timerStart, timerStop, timerReset} from '../action/Timer';
 
-import {
-  SWEEP,
-  check,
-  clearHints,
-} from '../action/Game';
+import {SWEEP, check, clearHints} from '../action/Game';
 
-import {
-  getIsLose,
-  getIsWon,
-  getTimerStarted,
-} from '../reducer';
+import {getIsLose, getIsWon, getTimerStarted} from '../reducer';
 
-function* sweep() {
+function* sweepTile() {
   yield put(check());
   yield put(clearHints());
   const state = yield select();
@@ -33,7 +17,9 @@ function* sweep() {
     yield put(showModal());
   }
   if (getIsLose(state)) {
-    yield call(Vibration.vibrate, 200);
+    if (Vibration?.vibrate) {
+      yield call(Vibration.vibrate, 200);
+    }
   }
   if (getIsLose(state) || getIsWon(state)) {
     yield put(timerStop());
@@ -44,11 +30,9 @@ function* sweep() {
 }
 
 function* watchSweep() {
-  yield takeLatest(SWEEP, sweep);
+  yield takeLatest(SWEEP, sweepTile);
 }
 
-export default function* game() {
-  yield all([
-    fork(watchSweep),
-  ]);
+export default function* sweep() {
+  yield all([fork(watchSweep)]);
 }

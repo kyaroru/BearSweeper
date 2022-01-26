@@ -1,17 +1,22 @@
 import {
-  actionChannel, call, take, put, race,
+  actionChannel,
+  delay,
+  take,
+  put,
+  race,
+  all,
+  fork,
 } from 'redux-saga/effects';
-import { delay } from 'redux-saga';
-import { timerIncrement, TIMER_STOP, TIMER_START } from '../action/Timer';
+import {timerIncrement, TIMER_STOP, TIMER_START} from '../action/Timer';
 
 function* runTimer() {
   const channel = yield actionChannel(TIMER_START);
-
   while (yield take(channel)) {
-    while (true) { // eslint-disable-line
+    while (true) {
+      // eslint-disable-line
       const winner = yield race({
         stopped: take(TIMER_STOP),
-        tick: call(delay, 1000),
+        tick: delay(1000),
       });
 
       if (!winner.stopped) {
@@ -23,4 +28,6 @@ function* runTimer() {
   }
 }
 
-export default runTimer;
+export default function* timer() {
+  yield all([fork(runTimer)]);
+}

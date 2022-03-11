@@ -58,3 +58,11 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
+
+vendor/
+
+*.cer
+
+*.mobileprovision
+
+ios/BearSweeper.app.dSYM.zip

@@ -135,8 +135,8 @@ android {
         applicationId "com.bearsweeper"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "1.0.1"
+        versionCode 3
+        versionName "1.0.2"
     }
     splits {
         abi {
@@ -149,9 +149,9 @@ android {
     signingConfigs {
         release {
             keyAlias 'kyaroru'
-            keyPassword 'Ca3r6oL'
-            storeFile file('/Users/kyaroru/kyaroru-release-key.jks')
-            storePassword 'Ca3r6oL'
+            keyPassword 'Ky3r6Ru'
+            storeFile file('/Users/kyaroru/kyaroru-upload-key')
+            storePassword 'Ky3r6Ru'
         }
     }
     buildTypes {

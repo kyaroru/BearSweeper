@@ -1,0 +1,12 @@
+app_identifier("com.kyaroru.bearsweeper") # The bundle identifier of your app
+package_name("com.bearsweeper") # e.g. com.krausefx.app
+
+apple_id("kyaroru@outlook.com") # Your Apple email address
+
+itc_team_id("119491695") # App Store Connect Team ID
+team_id("YJ2PZ62MH6") # Developer Portal Team ID
+
+for_lane :beta do
+  app_identifier("com.kyaroru.bearsweeper.dev")
+  package_name("com.kyaroru.bearsweeper.dev")
+end

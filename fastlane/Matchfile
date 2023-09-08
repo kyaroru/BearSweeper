@@ -1,0 +1,13 @@
+git_url("git@github.com:kyaroru/fastlane-certificates.git")
+
+storage_mode("git")
+
+username("kyaroru@outlook.com") # Your Apple Developer Portal username
+
+type("appstore")
+app_identifier("com.kyaroru.bearsweeper")
+
+for_lane :beta do
+    type("adhoc")
+    app_identifier("com.kyaroru.bearsweeper.dev")
+end

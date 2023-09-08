@@ -1,4 +1,11 @@
 {
-  "name": "BearSweeper",
-  "displayName": "BearSweeper"
+  "expo": {
+    "version": "1.1.0",
+    "ios": {
+      "buildNumber": "4"
+    },
+    "android": {
+      "versionCode": "4"
+    }
+  }
 }

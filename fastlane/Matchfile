@@ -5,7 +5,7 @@ storage_mode("git")
 username("kyaroru@outlook.com") # Your Apple Developer Portal username
 
 type("appstore")
-app_identifier("com.kyaroru.bearsweeper")
+app_identifier("com.kyaroru.BearSweeper")
 
 for_lane :beta do
     type("adhoc")

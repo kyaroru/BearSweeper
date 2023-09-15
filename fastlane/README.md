@@ -106,7 +106,7 @@ Registers new devices to the Apple Dev Portal and update provisioning profiles
 [bundle exec] fastlane android beta
 ```
 
-Deploy Flags4Fun Android to Firebase App Distribution
+Deploy BearSweeper Android to Firebase App Distribution
 
 ### android deploy
 

@@ -5,27 +5,27 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: Switch to android print_changelog lane" time="0.000148">
+      <testcase classname="fastlane.lanes" name="0: Switch to android validate_service_account lane" time="0.000117">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: echo &quot;$(cat ../release_notes.txt)&quot;" time="0.006331">
+      <testcase classname="fastlane.lanes" name="1: validate_play_store_json_key" time="0.309923">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: clean" time="36.504025">
+      <testcase classname="fastlane.lanes" name="2: bundleRelease" time="110.186077">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="3: assembleRelease" time="131.15024">
+      <testcase classname="fastlane.lanes" name="3: upload_to_play_store" time="121.993832">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="4: firebase_app_distribution" time="7.240579">
+      <testcase classname="fastlane.lanes" name="4: notification" time="0.571768">
         
       </testcase>
     

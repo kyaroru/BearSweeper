@@ -19,7 +19,7 @@ module.exports = ({config}) => {
       bundleIdentifier:
         IS_DEV || IS_STAGING
           ? 'com.kyaroru.bearsweeper.dev'
-          : 'com.kyaroru.bearsweeper',
+          : 'com.kyaroru.BearSweeper',
     },
     android: {
       versionCode: parseInt(config.android.versionCode, 10),

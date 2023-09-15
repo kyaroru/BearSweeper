@@ -134,7 +134,7 @@ platform :ios do
   lane :deploy do
     ios_project_path="ios/BearSweeper.xcodeproj"
     ios_workspace_path="ios/BearSweeper.xcworkspace"
-    match_output_profile_name="sigh_com.kyaroru.bearsweeper_appstore_profile-name"
+    match_output_profile_name="sigh_com.kyaroru.BearSweeper_appstore_profile-name"
 
     setup_ci if ENV['CI']
 

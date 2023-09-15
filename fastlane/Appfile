@@ -1,4 +1,4 @@
-app_identifier("com.kyaroru.bearsweeper") # The bundle identifier of your app
+app_identifier("com.kyaroru.BearSweeper") # The bundle identifier of your app
 package_name("com.bearsweeper") # e.g. com.krausefx.app
 
 apple_id("kyaroru@outlook.com") # Your Apple email address

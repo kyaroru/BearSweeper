@@ -13,10 +13,7 @@ const {store} = configureStore(onComplete);
 const Main = () => {
   return (
     <Provider store={store}>
-      <StatusBar
-        barStyle={Platform.OS === 'ios' ? 'dark-content' : 'default'}
-        backgroundColor={Colors.primary}
-      />
+      <StatusBar barStyle={'dark-content'} backgroundColor={Colors.primary} />
       <SafeAreaProvider>
         <App />
       </SafeAreaProvider>

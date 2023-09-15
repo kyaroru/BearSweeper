@@ -1,6 +1,6 @@
 tester_group="fluffy"
-app_id_ios="1:424361045218:ios:b884c39d29d3e9902602bb"
-app_id_android="1:424361045218:android:5406d64c0fd25cb22602bb"
+app_id_ios="1:491741782282:ios:d41aa4a5e1e84bf1545af3"
+app_id_android="1:491741782282:android:f2075359a77f2777545af3"
 git_private_key=ENV['MATCH_GIT_PRIVATE_KEY']
 fastlane_keychain="fastlane_tmp_keychain-db"
 

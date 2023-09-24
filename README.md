@@ -1,6 +1,6 @@
 # BearSweeper
 
-![Brownie](./src/Brownie.svg)
+![Brownie](./src/images/Brownie.svg)
 
 - A mini game similar to Minesweeper but this is for bear :p
 - It is built using ReactNative + Redux Saga

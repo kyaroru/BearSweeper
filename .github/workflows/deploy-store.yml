@@ -1,0 +1,67 @@
+name: 'Deploy to AppStore & PlayStore'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Build and Deploy to Store
+    runs-on: self-hosted
+    steps:
+      - name: Check for EXPO_TOKEN
+        run: |
+          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+            echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
+            exit 1
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node and npm
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      - name: Setup yarn
+        run: npm install -g yarn
+
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Run Expo Prebuild
+        run: npx expo prebuild
+        env:
+          APP_VARIANT: production
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          USED_CI: 'github' # this is to allow injecting release keystore
+
+      - name: Run fastlane deploy
+        run: fastlane ios deploy
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_PRIVATE_KEY: ${{ secrets.MATCH_GIT_PRIVATE_KEY }}
+          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT}}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID}}
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID}}
+
+      - name: Decode keystore from base64
+        env:
+          ENCODED_STRING: ${{ secrets.RELEASE_KEY_BASE64 }}
+        run: |
+          echo $ENCODED_STRING | base64 -d > release.keystore
+
+      - name: Run fastlane android deploy
+        run: fastlane android deploy
+        env:
+          GOOGLE_PLAY_SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_PRIVATE_KEY }}
+          GOOGLE_PLAY_SERVICE_ACCOUNT_PRIVATE_KEY_ID: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_PRIVATE_KEY_ID }}
+          GOOGLE_PLAY_SERVICE_ACCOUNT_PROJECT_ID: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_PROJECT_ID }}
+          GOOGLE_PLAY_SERVICE_ACCOUNT_CLIENT_ID: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_CLIENT_ID }}

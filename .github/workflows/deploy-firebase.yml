@@ -1,0 +1,70 @@
+name: Deploy to Firebase
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: 'Build & Deploy to Firebase'
+    runs-on: self-hosted
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Check for EXPO_TOKEN
+        run: |
+          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+            echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
+            exit 1
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node and npm
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      - name: Setup yarn
+        run: npm install -g yarn
+
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Run Expo Prebuild
+        run: npx expo prebuild
+        env:
+          APP_VARIANT: staging
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          USED_CI: 'github' # this is to allow injecting release keystore
+
+      - name: Generate changelog into text file
+        run: npx generate-changelog -f ./release_notes.txt
+
+      - name: Run fastlane ios beta
+        run: fastlane ios beta
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_PRIVATE_KEY: ${{ secrets.MATCH_GIT_PRIVATE_KEY }}
+          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT}}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID}}
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID}}
+
+      - name: Decode keystore from base64
+        env:
+          ENCODED_STRING: ${{ secrets.RELEASE_KEY_BASE64 }}
+        run: |
+          echo $ENCODED_STRING | base64 -d > release.keystore
+
+      - name: Run fastlane android beta
+        run: fastlane android beta
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

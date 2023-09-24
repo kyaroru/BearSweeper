@@ -1,0 +1,47 @@
+{
+  "cli": {
+    "version": ">= 3.9.0",
+    "promptToConfigurePushNotifications": false
+  },
+  "build": {
+    "development": {
+      "channel": "development",
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "env": {
+        "APP_VARIANT": "development"
+      }
+    },
+    "staging": {
+      "channel": "staging",
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "env": {
+        "APP_VARIANT": "staging",
+        "KEYSTORE_PASSWORD": "test",
+        "KEY_PASSWORD": "test",
+        "USED_CI": "expo"
+      }
+    },
+    "production": {
+      "channel": "production",
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "env": {
+        "APP_VARIANT": "production",
+        "KEYSTORE_PASSWORD": "test",
+        "KEY_PASSWORD": "test",
+        "USED_CI": "expo"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

@@ -1,0 +1,267 @@
+tester_group="fluffy"
+app_id_ios="1:491741782282:ios:d41aa4a5e1e84bf1545af3"
+app_id_android="1:491741782282:android:f2075359a77f2777545af3"
+git_private_key=ENV['MATCH_GIT_PRIVATE_KEY']
+fastlane_keychain="fastlane_tmp_keychain-db"
+
+apple_team_id="YJ2PZ62MH6"
+asc_key_content=ENV["APP_STORE_CONNECT_API_KEY_CONTENT"]
+asc_issuer_id=ENV["APP_STORE_CONNECT_ISSUER_ID"]
+asc_key_id=ENV["APP_STORE_CONNECT_API_KEY_ID"]
+
+google_play_project_id=ENV["GOOGLE_PLAY_SERVICE_ACCOUNT_PROJECT_ID"]
+google_play_private_key=ENV["GOOGLE_PLAY_SERVICE_ACCOUNT_PRIVATE_KEY"]
+google_play_private_key_id=ENV["GOOGLE_PLAY_SERVICE_ACCOUNT_PRIVATE_KEY_ID"]
+google_play_client_id=ENV["GOOGLE_PLAY_SERVICE_ACCOUNT_CLIENT_ID"]
+
+platform :ios do
+  # https://stackoverflow.com/questions/68461903/how-to-un-set-fastlane-tmp-keychain-db-as-the-default-keychain
+  desc 'If using self hosted runner, fastlane keychain should be removed'
+  lane :remove_tmp_keychain do
+    if File.exist? File.expand_path("~/Library/Keychains/#{fastlane_keychain}")
+      puts "fastlane keychain found, removing now"
+      delete_keychain(
+        name: fastlane_keychain
+      )
+    else
+      puts "fastlane keychain not found, skipping this step"
+    end
+  end
+
+  lane :print_changelog do
+    puts "Changelog for the day"
+    sh('echo "$(cat ../release_notes.txt)"')
+  end
+
+  lane :match_staging do
+    match(
+      app_identifier: 'com.kyaroru.bearsweeper.dev',
+      type: "adhoc",
+      readonly: false,
+    )
+  end
+
+  lane :match_production do
+    match(
+      readonly: false,
+    )
+  end
+
+  desc 'Registers new devices to the Apple Dev Portal and update provisioning profiles'
+  lane :register_new_devices do
+    api_key = app_store_connect_api_key(
+      key_id: asc_key_id,
+      issuer_id: asc_issuer_id,
+      key_content: asc_key_content,
+      in_house: false
+    )
+    register_devices(
+      api_key: api_key,
+      devices_file: "./devices.txt"
+    )
+    match(
+      app_identifier: 'com.kyaroru.bearsweeper.dev',
+      type: "adhoc",
+      readonly: false,
+      force_for_new_devices: true
+    )
+  end
+
+  lane :verify_ipa do
+    # this is just for verifying .ipa without actual uploading
+    api_key = app_store_connect_api_key(
+      key_id: asc_key_id,
+      issuer_id: asc_issuer_id,
+      key_content: asc_key_content,
+      in_house: false
+    )
+    upload_to_app_store(
+      ipa: "./BearSweeper.ipa",
+      api_key: api_key,
+      submit_for_review: false,
+      verify_only: true,
+    )
+  end
+
+  lane :beta do
+    ios_project_path="ios/BearSweeperFluffy.xcodeproj"
+    ios_workspace_path="ios/BearSweeperFluffy.xcworkspace"
+    match_output_profile_name="sigh_com.kyaroru.bearsweeper.dev_adhoc_profile-name"
+
+    setup_ci if ENV['CI']
+
+    api_key = app_store_connect_api_key(
+      key_id: asc_key_id,
+      issuer_id: asc_issuer_id,
+      key_content: asc_key_content,
+      in_house: false
+    )
+    update_project_team(
+      path: ios_project_path,
+      teamid: apple_team_id
+    )
+    match(
+      git_private_key: git_private_key,
+      api_key: api_key,
+      readonly: true,
+    )
+    profile_name=ENV[match_output_profile_name]
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      code_sign_identity: "iPhone Distribution",
+      path: ios_project_path,
+    )
+    print_changelog
+    build_app(
+      workspace: ios_workspace_path,
+      scheme: 'BearSweeperFluffy',
+      configuration: 'Release',
+      export_method: "ad-hoc",
+      xcargs: {
+        PROVISIONING_PROFILE_SPECIFIER: profile_name,
+      },
+    )
+    firebase_app_distribution(
+      app: app_id_ios,
+      groups: tester_group,
+      release_notes_file: "./release_notes.txt"
+    )
+    clean_build_artifacts
+    remove_tmp_keychain if ENV['CI']
+    notification(subtitle: "Deployed BearSweeper iOS to Firebase", message: "Success 🎉")
+  end
+
+  lane :deploy do
+    ios_project_path="ios/BearSweeper.xcodeproj"
+    ios_workspace_path="ios/BearSweeper.xcworkspace"
+    match_output_profile_name="sigh_com.kyaroru.BearSweeper_appstore_profile-name"
+
+    setup_ci if ENV['CI']
+
+    api_key = app_store_connect_api_key(
+      key_id: asc_key_id,
+      issuer_id: asc_issuer_id,
+      key_content: asc_key_content,
+      in_house: false
+    )
+
+    update_project_team(
+      path: ios_project_path,
+      teamid: apple_team_id
+    )
+    match(
+      git_private_key: git_private_key,
+      api_key: api_key,
+      readonly: true,
+    )
+    profile_name=ENV[match_output_profile_name]
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      code_sign_identity: "iPhone Distribution",
+      path: ios_project_path,
+    )
+    build_app(
+      workspace: ios_workspace_path,
+      scheme: 'BearSweeper',
+      configuration: 'Release',
+      export_method: "app-store",
+      xcargs: {
+        PROVISIONING_PROFILE_SPECIFIER: profile_name,
+      },
+    )
+    upload_to_app_store(
+      api_key: api_key,
+      submit_for_review: false,
+      skip_screenshots: true,
+      skip_metadata: true,
+      force: true,
+      run_precheck_before_submit: false,
+      # verify_only: true,  # remove this when ready to deploy!
+      submission_information: {
+        export_compliance_uses_encryption: false,
+      }
+    )
+    clean_build_artifacts
+    remove_tmp_keychain if ENV['CI']
+    notification(subtitle: "Deployed BearSweeper Production iOS", message: "Success 🎉")
+  end
+
+end
+
+platform :android do
+  google_service_account_json=JSON.generate({
+    "type": "service_account",
+    "project_id": google_play_project_id,
+    "private_key_id": google_play_private_key_id,
+    "private_key": google_play_private_key,
+    "client_email": "fastlane-flowy@#{google_play_project_id}.iam.gserviceaccount.com", # this is sharing with flowy
+    "client_id": google_play_client_id,
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/fastlane-flowy%40#{google_play_project_id}.iam.gserviceaccount.com" # this is sharing with flowy
+  })
+
+  lane :validate_service_account do
+    # uncomment if you want to stringify it and store it as ENV string (but only works locally, not on GHA)
+    # google_service_account_str=JSON.unparse(google_service_account_json)
+    # puts google_service_account_str
+
+    validate_play_store_json_key(
+      json_key_data: google_service_account_json,
+    )
+  end
+
+  lane :print_changelog do
+    puts "Changelog for the day"
+    sh('echo "$(cat ../release_notes.txt)"')
+  end
+
+  desc 'Deploy BearSweeper Android to Firebase App Distribution'
+  lane :beta do
+    print_changelog
+    gradle(task: 'clean', project_dir: 'android/')
+    gradle(task: 'assemble', build_type: 'Release', project_dir: 'android/')
+    firebase_app_distribution(
+      app: app_id_android,
+      groups: tester_group,
+      release_notes_file: "./release_notes.txt"
+    )
+    notification(subtitle: "Deployed BearSweeper Android to Firebase", message: "Success 🎉")
+  end
+
+  lane :deploy do
+    validate_service_account
+    gradle(task: 'bundle', build_type: 'Release', project_dir: 'android/')
+    upload_to_play_store(
+      json_key_data: google_service_account_json,
+      changes_not_sent_for_review: true,
+      release_status: 'draft',
+      # validate_only: true # remove this when ready to deploy!
+    )
+    notification(subtitle: "Deployed BearSweeper Production Android", message: "Success 🎉")
+  end
+
+  lane :validate_bundle do
+    # this is just for validating bundle without actual uploading
+    upload_to_play_store(
+      aab: "./android/app/build/outputs/bundle/release/app-release.aab",
+      json_key_data: google_service_account_json,
+      changes_not_sent_for_review: true,
+      release_status: 'draft',
+      validate_only: true
+    )
+  end
+
+  lane :bundle do
+    gradle(task: 'clean', project_dir: 'android/')
+    gradle(task: 'bundle', build_type: 'Release', project_dir: 'android/')
+    notification(subtitle: "Bundle AAB", message: "Success 🎉")
+  end
+
+  lane :build do
+    gradle(task: 'clean', project_dir: 'android/')
+    gradle(task: 'assemble', build_type: 'Release', project_dir: 'android/')
+    notification(subtitle: "Build APK", message: "Success 🎉")
+  end
+end

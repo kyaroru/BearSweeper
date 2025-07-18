@@ -7,13 +7,13 @@ module.exports = ({config}) => {
     slug: 'bearsweeper',
     version: config.version,
     orientation: 'portrait',
-    icon: './assets/icon.png',
     splash: {
       resizeMode: 'contain',
       backgroundColor: '#FFFFFF',
     },
     assetBundlePatterns: ['**/*'],
     ios: {
+    icon: './assets/icon.png',
       buildNumber: config.ios.buildNumber,
       supportsTablet: true,
       bundleIdentifier:
@@ -30,12 +30,27 @@ module.exports = ({config}) => {
         backgroundColor: '#FFFFFF',
       },
       permissions: ['android.permission.ACCESS_NETWORK_STATE'],
+      edgeToEdgeEnabled: true,
       package:
         IS_DEV || IS_STAGING
           ? 'com.kyaroru.bearsweeper.dev'
           : 'com.bearsweeper',
     },
     plugins: [
+      [
+        'expo-splash-screen',
+        {
+          backgroundColor: '#FFFFFF',
+          android: {
+            image: './assets/adaptive-icon.png',
+            imageWidth: 200,
+          },
+          ios: {
+            image: './assets/icon-round.png',
+            imageWidth: 200,
+          },
+        },
+      ],
       [
         './plugins/with-release-cert',
         {

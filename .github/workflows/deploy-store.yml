@@ -19,29 +19,25 @@ jobs:
     runs-on: self-hosted
     if: github.event.inputs.platform == 'ios' || github.event.inputs.platform == 'all'
     steps:
-      - name: Check for EXPO_TOKEN
+      - name: 'Cleanup build folder'
         run: |
-          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
-            echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
-            exit 1
-          fi
+          echo "Current working directory: "
+          ls -la ./
+          rm -rf ./* || true
+          rm -rf ./.??* || true
+          echo "Finish cleanup...new working directory: "
+          ls -la ./
 
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node and npm
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
+          node-version: '23.x'
 
       - name: Setup yarn
         run: npm install -g yarn
-
-      - name: Setup Expo and EAS
-        uses: expo/expo-github-action@v8
-        with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
         run: yarn install
@@ -68,29 +64,25 @@ jobs:
     runs-on: self-hosted
     if: github.event.inputs.platform == 'android' || github.event.inputs.platform == 'all'
     steps:
-      - name: Check for EXPO_TOKEN
+      - name: 'Cleanup build folder'
         run: |
-          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
-            echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
-            exit 1
-          fi
+          echo "Current working directory: "
+          ls -la ./
+          rm -rf ./* || true
+          rm -rf ./.??* || true
+          echo "Finish cleanup...new working directory: "
+          ls -la ./
 
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node and npm
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
+          node-version: '23.x'
 
       - name: Setup yarn
         run: npm install -g yarn
-
-      - name: Setup Expo and EAS
-        uses: expo/expo-github-action@v8
-        with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
         run: yarn install

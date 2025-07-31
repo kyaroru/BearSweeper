@@ -1,6 +1,5 @@
 import {Provider} from 'react-redux';
 import configureStore from 'store/configureStore';
-import {StatusBar} from 'react-native';
 import App from './app';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import * as Colors from 'themes/colors';
@@ -13,7 +12,6 @@ const {store} = configureStore(onComplete);
 const Main = () => {
   return (
     <Provider store={store}>
-      <StatusBar barStyle={'dark-content'} backgroundColor={Colors.primary} />
       <SafeAreaProvider>
         <App />
       </SafeAreaProvider>

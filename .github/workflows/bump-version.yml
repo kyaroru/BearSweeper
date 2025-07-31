@@ -1,0 +1,110 @@
+name: Bump app version
+on:
+  workflow_dispatch:
+    inputs:
+      releaseType:
+        type: 'choice'
+        description: 'Type of release (major, minor, patch)'
+        required: true
+        default: 'patch'
+        options:
+          - major
+          - minor
+          - patch
+jobs:
+  bump-app-version:
+    name: 'Bump app version for ${{ github.event.inputs.releaseType }} release'
+    runs-on: self-hosted
+    steps:
+      - name: 'Cleanup build folder'
+        run: |
+          echo "Current working directory: "
+          ls -la ./
+          rm -rf ./* || true
+          rm -rf ./.??* || true
+          echo "Finish cleanup...new working directory: "
+          ls -la ./
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get app version from app.json
+        id: get-app-version
+        uses: notiz-dev/github-action-json-property@release
+        with:
+          path: 'app.json'
+          prop_path: 'expo.version'
+
+      - name: Get android version code from app.json
+        id: get-android-version-code
+        uses: notiz-dev/github-action-json-property@release
+        with:
+          path: 'app.json'
+          prop_path: 'expo.android.versionCode'
+
+      - name: Get ios build number from app.json
+        id: get-ios-build-number
+        uses: notiz-dev/github-action-json-property@release
+        with:
+          path: 'app.json'
+          prop_path: 'expo.ios.buildNumber'
+
+      - name: Print existing version + build numbers
+        run: |
+          echo "existing app versoin: ${{ steps.get-app-version.outputs.prop }}"
+          echo "existing ios buildNumber: ${{ steps.get-ios-build-number.outputs.prop }}"
+          echo "existing android versionCode: ${{ steps.get-android-version-code.outputs.prop }}"
+
+      - name: Increment build numbers
+        id: increment-build-numbers
+        env:
+          versionCode: ${{ steps.get-android-version-code.outputs.prop }}
+          buildNumber: ${{ steps.get-ios-build-number.outputs.prop }}
+        run: |
+          echo "new_ios_build_number=$(($buildNumber+1))" >> $GITHUB_OUTPUT
+          echo "new_android_version_code=$(($versionCode+1))" >> $GITHUB_OUTPUT
+
+      - name: Bump app version in package.json
+        id: bump-version
+        run: |
+          yarn version --${{ github.event.inputs.releaseType }} --no-git-tag-version
+          echo "version=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_OUTPUT
+
+      - name: Print new version + build numbers
+        run: |
+          echo "new app version: ${{ steps.bump-version.outputs.version }}"
+          echo "new ios buildNumber: ${{ steps.increment-build-numbers.outputs.new_ios_build_number }}"
+          echo "new android versionCode: ${{ steps.increment-build-numbers.outputs.new_android_version_code }}"
+
+      - name: Update app.json with new version
+        uses: jossef/action-set-json-field@v2.1
+        with:
+          file: app.json
+          field: expo.version
+          value: ${{ steps.bump-version.outputs.version }}
+
+      - name: Update app.json with new android version code
+        uses: jossef/action-set-json-field@v2.1
+        with:
+          file: app.json
+          field: expo.android.versionCode
+          value: ${{ steps.increment-build-numbers.outputs.new_android_version_code }}
+
+      - name: Update app.json with new ios build number
+        uses: jossef/action-set-json-field@v2.1
+        with:
+          file: app.json
+          field: expo.ios.buildNumber
+          value: ${{ steps.increment-build-numbers.outputs.new_ios_build_number }}
+
+      - name: Git commit and push
+        env:
+          CI_COMMIT_MESSAGE: 'chore: bump version to ${{ steps.bump-version.outputs.version }} (${{ steps.increment-build-numbers.outputs.new_android_version_code }})'
+        run: |
+          git config --global user.name "Carol"
+          git config --global user.email "kyaroru@outlook.com"
+          git add app.json package.json
+          git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git push

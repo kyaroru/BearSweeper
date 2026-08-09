@@ -3,6 +3,7 @@ app_id_ios="1:491741782282:ios:d41aa4a5e1e84bf1545af3"
 app_id_android="1:491741782282:android:f2075359a77f2777545af3"
 git_private_key=ENV['MATCH_GIT_PRIVATE_KEY']
 fastlane_keychain="fastlane_tmp_keychain-db"
+fastlane_keychain_password="fastlane_tmp_password"
 
 apple_team_id="YJ2PZ62MH6"
 asc_key_content=ENV["APP_STORE_CONNECT_API_KEY_CONTENT"]
@@ -14,15 +15,63 @@ google_play_private_key=ENV["GOOGLE_PLAY_SERVICE_ACCOUNT_PRIVATE_KEY"]
 google_play_private_key_id=ENV["GOOGLE_PLAY_SERVICE_ACCOUNT_PRIVATE_KEY_ID"]
 google_play_client_id=ENV["GOOGLE_PLAY_SERVICE_ACCOUNT_CLIENT_ID"]
 
+firebase_project_id=ENV["FIREBASE_SERVICE_ACCOUNT_PROJECT_ID"]
+firebase_private_key=ENV["FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY"]
+firebase_private_key_id=ENV["FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY_ID"]
+firebase_client_id=ENV["FIREBASE_SERVICE_ACCOUNT_CLIENT_ID"]
+
+# Helper: build Firebase App Distribution service account JSON from env vars
+def build_firebase_sa_json(project_id:, private_key_id:, private_key:, client_id:)
+  require 'json'
+  JSON.generate({
+    "type": "service_account",
+    "project_id": project_id,
+    "private_key_id": private_key_id,
+    "private_key": private_key,
+    "client_email": "bearsweeper-firebase@#{project_id}.iam.gserviceaccount.com",
+    "client_id": client_id,
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/bearsweeper-firebase%40#{project_id}.iam.gserviceaccount.com",
+    "universe_domain": "googleapis.com"
+  })
+end
+
 platform :ios do
-  # https://stackoverflow.com/questions/68461903/how-to-un-set-fastlane-tmp-keychain-db-as-the-default-keychain
-  desc 'If using self hosted runner, fastlane keychain should be removed'
+  desc 'Setup tmp keychain manually without overriding default keychain'
+  lane :setup_tmp_keychain do
+    puts "Setting up temporary keychain for match"
+
+    # Create temporary keychain (but don't set as default)
+    create_keychain(
+      name: fastlane_keychain,
+      password: fastlane_keychain_password,
+      default_keychain: false,  # Keep login.keychain as default
+      unlock: true,
+      timeout: 0, # never lock
+      lock_when_sleeps: false
+    )
+
+    puts "Temporary keychain created: #{fastlane_keychain}"
+  end
+
+  desc 'Remove fastlane keychain after build'
   lane :remove_tmp_keychain do
+    puts "Cleaning up fastlane temporary keychain"
+
+    # Remove from keychain list first
     if File.exist? File.expand_path("~/Library/Keychains/#{fastlane_keychain}")
-      puts "fastlane keychain found, removing now"
-      delete_keychain(
-        name: fastlane_keychain
-      )
+      # Delete the keychain file
+      puts "Deleting fastlane keychain file"
+      delete_keychain(name: fastlane_keychain) rescue nil
+
+      # Manually remove file if still exists
+      keychain_path = File.expand_path("~/Library/Keychains/#{fastlane_keychain}")
+      if File.exist?(keychain_path)
+        puts "Force removing keychain file: #{keychain_path}"
+        File.delete(keychain_path) rescue nil
+      end
     else
       puts "fastlane keychain not found, skipping this step"
     end
@@ -44,6 +93,46 @@ platform :ios do
   lane :match_production do
     match(
       readonly: false,
+    )
+  end
+
+  desc 'Renew certificates for both staging and production'
+  lane :renew_certs do
+    api_key = app_store_connect_api_key(
+      key_id: asc_key_id,
+      issuer_id: asc_issuer_id,
+      key_content: asc_key_content,
+      in_house: false
+    )
+
+    match_nuke(
+      api_key: api_key,
+      type: "adhoc",
+      skip_confirmation: true
+    )
+
+    match_nuke(
+      api_key: api_key,
+      type: "appstore",
+      skip_confirmation: true
+    )
+
+    # AdHoc certificates for staging
+    match(
+      api_key: api_key,
+      app_identifier: ['com.kyaroru.bearsweeper.dev'],
+      type: "adhoc",
+      readonly: false,
+      force: true,
+    )
+
+    # AppStore certificates for production
+    match(
+      api_key: api_key,
+      app_identifier: ['com.kyaroru.BearSweeper'],
+      type: "appstore",
+      readonly: false,
+      force: true,
     )
   end
 
@@ -88,7 +177,7 @@ platform :ios do
     ios_workspace_path="ios/BearSweeperFluffy.xcworkspace"
     match_output_profile_name="sigh_com.kyaroru.bearsweeper.dev_adhoc_profile-name"
 
-    setup_ci if ENV['CI']
+    setup_tmp_keychain
 
     api_key = app_store_connect_api_key(
       key_id: asc_key_id,
@@ -121,13 +210,28 @@ platform :ios do
         PROVISIONING_PROFILE_SPECIFIER: profile_name,
       },
     )
+    # Prepare Firebase service account JSON and write to a temp file
+    require 'tmpdir'
+    firebase_service_account_json = build_firebase_sa_json(
+      project_id: firebase_project_id,
+      private_key_id: firebase_private_key_id,
+      private_key: firebase_private_key,
+      client_id: firebase_client_id,
+    )
+    temp_sa_path = File.join(Dir.tmpdir, "firebase_service_account_#{Time.now.to_i}.json")
+    File.write(temp_sa_path, firebase_service_account_json)
     firebase_app_distribution(
       app: app_id_ios,
       groups: tester_group,
-      release_notes_file: "./release_notes.txt"
+      release_notes_file: "./release_notes.txt",
+      upload_timeout: 1200, # 20 minutes to prevent timeout error
+      service_credentials_file: temp_sa_path,
     )
+    if temp_sa_path && File.exist?(temp_sa_path)
+      File.delete(temp_sa_path) rescue nil
+    end
     clean_build_artifacts
-    remove_tmp_keychain if ENV['CI']
+    remove_tmp_keychain
     notification(subtitle: "Deployed BearSweeper iOS to Firebase", message: "Success 🎉")
   end
 
@@ -136,7 +240,7 @@ platform :ios do
     ios_workspace_path="ios/BearSweeper.xcworkspace"
     match_output_profile_name="sigh_com.kyaroru.BearSweeper_appstore_profile-name"
 
-    setup_ci if ENV['CI']
+    setup_tmp_keychain
 
     api_key = app_store_connect_api_key(
       key_id: asc_key_id,
@@ -182,7 +286,7 @@ platform :ios do
       }
     )
     clean_build_artifacts
-    remove_tmp_keychain if ENV['CI']
+    remove_tmp_keychain
     notification(subtitle: "Deployed BearSweeper Production iOS", message: "Success 🎉")
   end
 
@@ -222,11 +326,28 @@ platform :android do
     print_changelog
     gradle(task: 'clean', project_dir: 'android/')
     gradle(task: 'assemble', build_type: 'Release', project_dir: 'android/')
+
+    firebase_service_account_json = build_firebase_sa_json(
+      project_id: firebase_project_id,
+      private_key_id: firebase_private_key_id,
+      private_key: firebase_private_key,
+      client_id: firebase_client_id,
+    )
+
+    # Write JSON to a temporary file for service_credentials_file
+    require 'tmpdir'
+    temp_sa_path = File.join(Dir.tmpdir, "firebase_service_account_#{Time.now.to_i}.json")
+    File.write(temp_sa_path, firebase_service_account_json)
+
     firebase_app_distribution(
       app: app_id_android,
       groups: tester_group,
-      release_notes_file: "./release_notes.txt"
+      release_notes_file: "./release_notes.txt",
+      service_credentials_file: temp_sa_path
     )
+    if temp_sa_path && File.exist?(temp_sa_path)
+      File.delete(temp_sa_path) rescue nil
+    end
     notification(subtitle: "Deployed BearSweeper Android to Firebase", message: "Success 🎉")
   end
 

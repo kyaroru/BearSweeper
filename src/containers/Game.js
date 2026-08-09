@@ -11,8 +11,8 @@ import {
   Alert,
 } from 'react-native';
 import * as Colors from 'themes/colors';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {FontAwesome as Icon} from '@react-native-vector-icons/fontawesome';
+import {MaterialIcons} from '@react-native-vector-icons/material-icons';
 import {connect} from 'react-redux';
 import {newGame, getHints, clearHints} from 'actions/Game';
 import {timerReset, timerStop} from 'actions/Timer';

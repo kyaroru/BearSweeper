@@ -1,5 +1,5 @@
 import React from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import {FontAwesome as Icon} from '@react-native-vector-icons/fontawesome';
 
 export const getNavigationOptions = (title, backgroundColor, color) => ({
   title,

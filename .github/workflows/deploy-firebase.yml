@@ -35,7 +35,7 @@ jobs:
       - name: Setup Node and npm
         uses: actions/setup-node@v4
         with:
-          node-version: '23.x'
+          node-version-file: '.nvmrc'
 
       - name: Setup yarn
         run: npm install -g yarn
@@ -57,7 +57,10 @@ jobs:
       - name: Run fastlane ios beta
         run: fastlane ios beta
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY }}
+          FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY_ID: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY_ID }}
+          FIREBASE_SERVICE_ACCOUNT_PROJECT_ID: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROJECT_ID }}
+          FIREBASE_SERVICE_ACCOUNT_CLIENT_ID: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CLIENT_ID }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_PRIVATE_KEY: ${{ secrets.MATCH_GIT_PRIVATE_KEY }}
           APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT}}
@@ -86,7 +89,7 @@ jobs:
       - name: Setup Node and npm
         uses: actions/setup-node@v4
         with:
-          node-version: '23.x'
+          node-version-file: '.nvmrc'
 
       - name: Setup yarn
         run: npm install -g yarn
@@ -114,4 +117,7 @@ jobs:
       - name: Run fastlane android beta
         run: fastlane android beta
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY }}
+          FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY_ID: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY_ID }}
+          FIREBASE_SERVICE_ACCOUNT_PROJECT_ID: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROJECT_ID }}
+          FIREBASE_SERVICE_ACCOUNT_CLIENT_ID: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CLIENT_ID }}

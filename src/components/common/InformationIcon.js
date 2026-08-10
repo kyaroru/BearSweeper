@@ -3,7 +3,7 @@
 import React from 'react';
 import {StyleSheet, Alert, TouchableOpacity, View} from 'react-native';
 import * as Colors from 'themes/colors';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import {FontAwesome as Icon} from '@react-native-vector-icons/fontawesome';
 
 const styles = StyleSheet.create({
   container: {

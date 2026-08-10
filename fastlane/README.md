@@ -15,13 +15,21 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## iOS
 
+### ios setup_tmp_keychain
+
+```sh
+[bundle exec] fastlane ios setup_tmp_keychain
+```
+
+Setup tmp keychain manually without overriding default keychain
+
 ### ios remove_tmp_keychain
 
 ```sh
 [bundle exec] fastlane ios remove_tmp_keychain
 ```
 
-If using self hosted runner, fastlane keychain should be removed
+Remove fastlane keychain after build
 
 ### ios print_changelog
 
@@ -46,6 +54,14 @@ If using self hosted runner, fastlane keychain should be removed
 ```
 
 
+
+### ios renew_certs
+
+```sh
+[bundle exec] fastlane ios renew_certs
+```
+
+Renew certificates for both staging and production
 
 ### ios register_new_devices
 

@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node and npm
         uses: actions/setup-node@v4
         with:
-          node-version: '23.x'
+          node-version-file: '.nvmrc'
 
       - name: Install dependencies
         run: yarn install

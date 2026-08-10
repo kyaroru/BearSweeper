@@ -2,7 +2,7 @@
 
 import { connect } from 'react-redux';
 
-import Button from 'react-native-vector-icons/MaterialCommunityIcons';
+import {MaterialDesignIcons as Button} from '@react-native-vector-icons/material-design-icons';
 
 
 const mapStateToProps = () => ({

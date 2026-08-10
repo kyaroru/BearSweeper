@@ -30,13 +30,13 @@ module.exports = ({config}) => {
         backgroundColor: '#FFFFFF',
       },
       permissions: ['android.permission.ACCESS_NETWORK_STATE'],
-      edgeToEdgeEnabled: true,
       package:
         IS_DEV || IS_STAGING
           ? 'com.kyaroru.bearsweeper.dev'
           : 'com.bearsweeper',
     },
     plugins: [
+      'expo-status-bar',
       [
         'expo-splash-screen',
         {
